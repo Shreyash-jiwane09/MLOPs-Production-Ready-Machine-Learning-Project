@@ -29,7 +29,7 @@ The project follows a comprehensive MLOps pipeline with the following components
 ![Data Validation](images/data-validation.png)
 
 ### Model Training & Evaluation Pipeline
-![Model Training](images/model-trainer.png)
+![Model Training](images/Model-Trainer.png)
 
 ### Model Pusher Pipeline
 ![Model Pusher](images/model-pusher.png)
