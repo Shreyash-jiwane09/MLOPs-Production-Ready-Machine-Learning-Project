@@ -213,6 +213,8 @@ __marimo__/
 
 logs/
 artifact/
+notebook\catboost_info
+/demo.py
 
 
 
