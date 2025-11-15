@@ -39,12 +39,14 @@ The project follows a comprehensive MLOps pipeline with the following components
 
 ## 🚀 Key Features
 
+- **CI/CD Pipeline**: Automated deployment using GitHub Actions with self-hosted EC2 runner
+- **Cloud Deployment**: Complete AWS integration (EC2, ECR, S3) for production-ready deployment
 - **Modular ML Pipeline**: Separate components for data ingestion, validation, transformation, training, and evaluation
-- **Cloud Integration**: MongoDB for data storage and AWS S3 for model artifacts
-- **Data Drift Monitoring**: Evidently AI integration for detecting data drift
+- **Data Drift Monitoring**: Evidently AI integration for detecting data drift and model degradation
+- **Containerized Application**: Docker-based deployment with automated image building and registry management
+- **Cloud Integration**: MongoDB Atlas for data storage and AWS S3 for model artifacts versioning
 - **Web Interface**: FastAPI-based REST API with interactive HTML forms
 - **Automated Training**: End-to-end training pipeline with configurable parameters
-- **Production Ready**: Docker support and scalable architecture
 
 ## 🛠️ Tech Stack
 
@@ -53,9 +55,11 @@ The project follows a comprehensive MLOps pipeline with the following components
 **Visualization**: Matplotlib, Seaborn, Plotly  
 **MLOps**: Evidently AI, DVC-compatible structure  
 **Backend**: FastAPI, Uvicorn  
-**Database**: MongoDB  
-**Cloud**: AWS S3, boto3  
-**Deployment**: Docker, Python 3.x
+**Database**: MongoDB Atlas  
+**Cloud & Infrastructure**: AWS (EC2, ECR, S3), boto3  
+**CI/CD**: GitHub Actions with self-hosted EC2 runner  
+**Containerization**: Docker, Docker Compose  
+**Version Control**: Git, GitHub
 
 ## 📁 Project Structure
 
@@ -132,18 +136,88 @@ http://localhost:8000
 
 ### Docker Deployment
 ```bash
+# Build Docker image
 docker build -t us-visa-prediction .
-docker run -p 8000:8000 us-visa-prediction
+
+# Run container with environment variables
+docker run -p 8080:8080 \
+  -e AWS_ACCESS_KEY_ID=<your-access-key> \
+  -e AWS_SECRET_ACCESS_KEY=<your-secret-key> \
+  -e AWS_DEFAULT_REGION=<your-region> \
+  -e MONGODB_URL=<your-mongodb-url> \
+  us-visa-prediction
+```
+
+## 🔄 CI/CD Pipeline
+
+This project implements a complete CI/CD pipeline using **GitHub Actions** with a **self-hosted runner on AWS EC2**.
+
+### Pipeline Architecture
+
+```
+Git Push → GitHub Actions → Build Docker Image → Push to ECR → Deploy to EC2 → Production
+```
+
+### Automated Workflow
+
+1. **Code Commit**: Developer pushes code to GitHub repository
+2. **Trigger**: GitHub Actions workflow activates on self-hosted EC2 runner
+3. **Build**: Docker image is built with latest code changes
+4. **Registry**: Image pushed to Amazon ECR (Elastic Container Registry)
+5. **Deploy**: Automated deployment to EC2 production instance
+6. **Validation**: Health checks ensure successful deployment
+
+### Key Benefits
+
+- ✅ **Automated Deployment**: Zero-downtime deployments on every commit
+- ✅ **Self-Hosted Runner**: Full control over build environment and resources
+- ✅ **Container Registry**: Version-controlled Docker images in ECR
+- ✅ **Scalable Infrastructure**: EC2-based deployment ready for scaling
+- ✅ **Environment Isolation**: Separate staging and production environments
+
+### Environment Variables Required
+
+```bash
+AWS_ACCESS_KEY_ID          # AWS credentials for S3 and ECR access
+AWS_SECRET_ACCESS_KEY      # AWS secret key
+AWS_DEFAULT_REGION         # AWS region (e.g., us-east-1)
+MONGODB_URL                # MongoDB Atlas connection string
 ```
 
 ## 📊 ML Pipeline Components
 
-1. **Data Ingestion**: Fetches data from MongoDB and prepares datasets
-2. **Data Validation**: Validates schema and data quality using Evidently
-3. **Data Transformation**: Handles missing values, encoding, and feature engineering
-4. **Model Training**: Trains multiple models (XGBoost, CatBoost) with hyperparameter tuning
-5. **Model Evaluation**: Evaluates model performance and validates against thresholds
-6. **Model Pusher**: Deploys approved models to S3 and production directory
+### End-to-End Workflow
+
+1. **Data Ingestion**: 
+   - Fetches data from MongoDB Atlas
+   - Splits into training and testing datasets
+   - Stores in feature store for reproducibility
+
+2. **Data Validation**: 
+   - Validates schema and data types
+   - Detects data drift using Evidently AI
+   - Generates drift reports for monitoring
+
+3. **Data Transformation**: 
+   - Handles missing values and outliers
+   - Applies encoding (One-Hot, Ordinal)
+   - Feature scaling (StandardScaler, PowerTransformer)
+   - Handles class imbalance using SMOTE
+
+4. **Model Training**: 
+   - Trains multiple algorithms (XGBoost, CatBoost)
+   - Hyperparameter tuning for optimal performance
+   - Cross-validation for model robustness
+
+5. **Model Evaluation**: 
+   - Evaluates on precision, recall, F1-score, AUC
+   - Validates against acceptance thresholds
+   - Compares with baseline models
+
+6. **Model Pusher**: 
+   - Saves approved models to AWS S3
+   - Updates production model artifacts
+   - Maintains model version history
 
 ## 🎯 Input Features
 
@@ -161,6 +235,15 @@ docker run -p 8000:8000 us-visa-prediction
 ## 📈 Model Performance
 
 The project uses ensemble methods and handles class imbalance using SMOTE techniques. Model evaluation includes precision, recall, F1-score, and AUC metrics.
+
+### Production Deployment
+
+- **Hosting**: AWS EC2 instance
+- **Port**: 8080
+- **Container**: Docker-based deployment
+- **Registry**: Amazon ECR for image management
+- **Storage**: AWS S3 for model artifacts
+- **Database**: MongoDB Atlas for application data
 
 ## 👨‍💻 Author
 
